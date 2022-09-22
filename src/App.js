@@ -19,7 +19,7 @@ function App() {
 		<Canvas dpr={[1, 2]}>
 			<color attach="background" args={["goldenrod"]} />
 			<Center>
-				<ScrollControls pages={4}>
+				<ScrollControls pages={4} infinite>
 					<Composition />
 				</ScrollControls>
 			</Center>
@@ -36,15 +36,21 @@ function Composition() {
 	useFrame((state, delta) => {
 		const r1 = scroll.range(0, 1 / 4);
 		const r2 = scroll.range(1 / 4, 1 / 4);
-		state.camera.position.set((1 - r1) * 5 - r2 * 5, 0, 5);
+		const r3 = scroll.range(2 / 4, 1 / 4);
+		const r4 = scroll.range(3 / 4, 1 / 4);
+		const offset = -1 - r1 - 1 - r2 - 1 - r3 - 1 - r4;
+		const radius = 1;
+		state.camera.position.set(
+			Math.sin((offset * Math.PI) / 2),
+			0,
+			Math.cos((offset * Math.PI) / 2)
+		);
 		state.camera.lookAt(0, 0, 0);
-
-		console.log(r1);
 	});
 
 	return (
 		<>
-			<Suzi scale={2.5} />
+			<Suzi scale={0.4} />
 		</>
 	);
 }
