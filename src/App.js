@@ -15,20 +15,27 @@ import {
 import { FlakesTexture } from "three/examples/jsm/textures/FlakesTexture";
 
 function App() {
+	const container = useRef();
 	return (
-		<Canvas dpr={[1, 2]}>
-			<color attach="background" args={["goldenrod"]} />
-			<Center>
-				<ScrollControls pages={4} infinite>
-					<Composition />
-				</ScrollControls>
-			</Center>
-			<Lights />
-		</Canvas>
+		<div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0 }}>
+			<Canvas
+				dpr={[1, 2]}
+				camera={{ position: [0, 0, 8] }}
+				ref={container}
+			>
+				<color attach="background" args={["goldenrod"]} />
+				<Center>
+					<ScrollControls pages={4} damping={5}>
+						<Composition containerRef={container} />
+					</ScrollControls>
+				</Center>
+				<Lights />
+			</Canvas>
+		</div>
 	);
 }
 
-function Composition() {
+function Composition({ containerRef }) {
 	const title = useRef();
 	const scroll = useScroll();
 	const { width, height } = useThree((state) => state.viewport);
@@ -46,6 +53,11 @@ function Composition() {
 			Math.cos((offset * Math.PI) / 2)
 		);
 		state.camera.lookAt(0, 0, 0);
+
+		if (containerRef.current) {
+			containerRef.current.style.width = `${100 * (1 - r1)}vw`;
+			console.log(containerRef.current);
+		}
 	});
 
 	return (
@@ -56,15 +68,10 @@ function Composition() {
 }
 
 function Suzi(props) {
-	const front = useRef();
-
 	const { scene, materials } = useGLTF(
 		"https://market-assets.fra1.cdn.digitaloceanspaces.com/market-assets/models/suzanne-high-poly/model.gltf"
 	);
 	React.useLayoutEffect(() => {
-		scene.traverse(
-			(obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true)
-		);
 		applyProps(materials.default, {
 			color: "silver",
 			roughness: 0,
@@ -80,16 +87,8 @@ function Suzi(props) {
 		});
 	});
 
-	return <primitive object={scene} position={[0, 10, 0]} {...props} />;
+	return <primitive object={scene} {...props} />;
 }
-
-const Tag = forwardRef(({ text, ...props }, ref) => {
-	return (
-		<Html ref={ref} className="data" center {...props}>
-			<h1>{text}</h1>
-		</Html>
-	);
-});
 
 const Lights = () => {
 	return (
@@ -97,21 +96,21 @@ const Lights = () => {
 			<AccumulativeShadows
 				temporal
 				frames={100}
-				color="goldenrod"
+				color="red"
 				alphaTest={0.65}
 				opacity={2}
 				scale={14}
 				position={[0, -0.5, 0]}
 			>
 				<RandomizedLight
-					amount={8}
+					amount={10}
 					radius={4}
 					ambient={0.5}
 					bias={0.001}
 					position={[5, 5, -10]}
 				/>
 			</AccumulativeShadows>
-			<Environment preset="city" />
+			<Environment preset="sunset" />
 		</>
 	);
 };
