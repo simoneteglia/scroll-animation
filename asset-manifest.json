@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/scroll-animation/static/css/main.4f28a805.css",
-    "main.js": "/scroll-animation/static/js/main.fdbe2006.js",
-    "index.html": "/scroll-animation/index.html",
-    "main.4f28a805.css.map": "/scroll-animation/static/css/main.4f28a805.css.map",
-    "main.fdbe2006.js.map": "/scroll-animation/static/js/main.fdbe2006.js.map"
+    "main.css": "/scroll-animation!/static/css/main.4f28a805.css",
+    "main.js": "/scroll-animation!/static/js/main.fdbe2006.js",
+    "index.html": "/scroll-animation!/index.html",
+    "main.4f28a805.css.map": "/scroll-animation!/static/css/main.4f28a805.css.map",
+    "main.fdbe2006.js.map": "/scroll-animation!/static/js/main.fdbe2006.js.map"
   },
   "entrypoints": [
     "static/css/main.4f28a805.css",
