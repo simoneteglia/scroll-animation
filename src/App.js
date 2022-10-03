@@ -11,6 +11,7 @@ import {
 	useScroll,
 	ScrollControls,
 	Html,
+	RoundedBox,
 } from "@react-three/drei";
 import { FlakesTexture } from "three/examples/jsm/textures/FlakesTexture";
 
@@ -18,11 +19,7 @@ function App() {
 	const container = useRef();
 	return (
 		<div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0 }}>
-			<Canvas
-				dpr={[1, 2]}
-				camera={{ position: [0, 0, 8] }}
-				ref={container}
-			>
+			<Canvas dpr={[1, 2]} ref={container}>
 				<color attach="background" args={["goldenrod"]} />
 				<Center>
 					<ScrollControls pages={4} damping={5}>
@@ -39,6 +36,8 @@ function Composition({ containerRef }) {
 	const title = useRef();
 	const scroll = useScroll();
 	const { width, height } = useThree((state) => state.viewport);
+	const { setSize } = useThree((state) => state.setSize);
+	const { size } = useThree((state) => state.size);
 
 	useFrame((state, delta) => {
 		const r1 = scroll.range(0, 1 / 4);
@@ -46,23 +45,19 @@ function Composition({ containerRef }) {
 		const r3 = scroll.range(2 / 4, 1 / 4);
 		const r4 = scroll.range(3 / 4, 1 / 4);
 		const offset = -1 - r1 - 1 - r2 - 1 - r3 - 1 - r4;
-		const radius = 1;
+		const radius = 0.8;
 		state.camera.position.set(
-			Math.sin((offset * Math.PI) / 2),
+			Math.sin((offset * Math.PI) / 2) * radius,
 			0,
-			Math.cos((offset * Math.PI) / 2)
+			Math.cos((offset * Math.PI) / 2) * radius
 		);
 		state.camera.lookAt(0, 0, 0);
-
-		if (containerRef.current) {
-			containerRef.current.style.width = `${100 * (1 - r1)}vw`;
-			console.log(containerRef.current);
-		}
 	});
 
 	return (
 		<>
 			<Suzi scale={0.4} />
+			<Glass position={[0, 0.45, 0.4]} />
 		</>
 	);
 }
@@ -90,6 +85,34 @@ function Suzi(props) {
 	return <primitive object={scene} {...props} />;
 }
 
+function Glass(props) {
+	const textureLoader = new THREE.TextureLoader();
+	const normalMapTexture = textureLoader.load(
+		"./resources/glassNormalMap.jpeg"
+	);
+	const glassGeometry = new THREE.BoxGeometry(0.8, 0.6, 0.03);
+	const glassMaterial = new THREE.MeshPhysicalMaterial({
+		transmission: 1,
+		thickness: 0.03,
+		roughness: 0.5,
+		normalMap: normalMapTexture,
+	});
+
+	const glassMesh = new THREE.Mesh(glassGeometry, glassMaterial);
+
+	return (
+		<RoundedBox args={[0.8, 0.3, 0.01]} radius={0.01} {...props}>
+			<meshPhysicalMaterial
+				transmission={1}
+				thickness={0.03}
+				roughness={0.25}
+				normalMap={normalMapTexture}
+				normalScale={[10, 10]}
+			/>
+		</RoundedBox>
+	);
+}
+
 const Lights = () => {
 	return (
 		<>
@@ -110,7 +133,7 @@ const Lights = () => {
 					position={[5, 5, -10]}
 				/>
 			</AccumulativeShadows>
-			<Environment preset="sunset" />
+			<Environment preset="city" />
 		</>
 	);
 };
